@@ -8,32 +8,45 @@
 import UIKit
 
 class ViewController: UIViewController {
-
+    
     private struct Constant {
         static let notImageFound = UIImage(named: "interrogante")
     }
     
     @IBOutlet weak var animalTextField: UITextField!
     @IBOutlet weak var animalImageView: UIImageView!
+    
+    var animalImageExists = false
+    var animalImage = Constant.notImageFound
             
     @IBAction func findButtonPressed(_ sender: Any) {
         checkAnimalImageExists()
+        setAnimalImage()
+        showAnimalImage()
     }
     
     private func checkAnimalImageExists() {
         let animal = animalTextField.text ?? ""
-        let animalImage = UIImage(named: animal)
-        if let animalImage {
-            showAnimalImage(animalImage)
+        animalImageExists = UIImage(named: animal) != nil
+    }
+    
+    private func setAnimalImage(){
+        guard let animal = animalTextField.text else {
+            return
+        }
+        if animalImageExists {
+            animalImage = UIImage(named: animal)
         } else {
-            showAnimalImage(Constant.notImageFound!)
+            animalImage = Constant.notImageFound
         }
     }
     
-    private func showAnimalImage(_ image: UIImage) {
-        animalImageView.image = image
+    private func showAnimalImage() {
+        guard let animalImage = animalImage else {
+            return
+        }
+        animalImageView.image = animalImage
         animalImageView.isHidden = false
     }
-    
 }
 

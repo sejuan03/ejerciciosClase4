@@ -31,7 +31,7 @@ class ViewController: UIViewController {
         convertCelsius = true
         grades = centigradesTextField.text ?? ""
         validateTemperatureField()
-        proccessTemperatureField()
+        setConvertionMessageResult()
         resultLabel = resultFarenheitLabel
         showResultMessage()
     }
@@ -40,7 +40,7 @@ class ViewController: UIViewController {
         convertCelsius = false
         grades = farenheitTextField.text ?? ""
         validateTemperatureField()
-        proccessTemperatureField()
+        setConvertionMessageResult()
         resultLabel = resultCentigradesLabel
         showResultMessage()
     }
@@ -50,14 +50,13 @@ class ViewController: UIViewController {
         validTemperature = !grades.isEmpty
     }
     
-    private func proccessTemperatureField() {
+    private func setConvertionMessageResult() {
         if validTemperature && temperatureIsNumeric {
-            let resultTemperature = processGrades()
-            setMessage(resultTemperature)
+            message = processGrades()
         } else if validTemperature {
-            setMessage(Constant.writeNumberMessage)
+            message = Constant.writeNumberMessage
         } else {
-            setMessage(Constant.emptyField)
+            message = Constant.emptyField
         }
     }
     
@@ -68,16 +67,12 @@ class ViewController: UIViewController {
             return Constant.bigError
         }
         if convertCelsius {
-            let celsius = convertCentigradesToFarenheit(gradesNumeric)
-            return parseTemperature(celsius) + " °F"
+            let farenheit = convertCentigradesToFarenheit(gradesNumeric)
+            return parseTemperature(farenheit) + " °F"
         } else {
-            let farenheit = convertFarenheitToCentigrades(gradesNumeric)
-            return parseTemperature(farenheit) + " °C"
+            let celsius = convertFarenheitToCentigrades(gradesNumeric)
+            return parseTemperature(celsius) + " °C"
         }
-    }
-    
-    private func setMessage(_ resultMessage: String) {
-        message = resultMessage
     }
     
     private func convertCentigradesToFarenheit(_ centigrades: Double) -> Double {
