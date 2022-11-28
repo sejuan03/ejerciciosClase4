@@ -18,12 +18,18 @@ class ViewController: UIViewController {
     @IBOutlet weak var resultFarenheitLabel: UILabel!
     
     @IBAction func convertButtonPressed(_ sender: Any) {
-        checkEmptyField()
+        let grades = centigradesTextField.text ?? ""
+        var emptyField: Bool
+        emptyField = checkEmptyField(grades)
+        processEmptyField(emptyField, grades)
     }
     
-    private func checkEmptyField() {
-        let grades = centigradesTextField.text ?? ""
-        if grades.isEmpty {
+    private func checkEmptyField(_ grades: String) -> Bool {
+        return grades.isEmpty
+    }
+    
+    private func processEmptyField(_ emptyField: Bool, _ grades: String) {
+        if emptyField {
             showResultMessage(Constant.emptyField)
         } else {
             processCentigrades(grades)
@@ -37,16 +43,15 @@ class ViewController: UIViewController {
     
     private func processCentigrades(_ grades: String) {
         if let centigrades = Double(grades) {
-            convertCentigradesToFarenheit(centigrades)
+            var farenheit = convertCentigradesToFarenheit(centigrades)
+            showResultMessage(farenheit)
         } else {
             showResultMessage(Constant.writeNumberMessage)
         }
     }
     
-    private func convertCentigradesToFarenheit(_ centigrades: Double) {
-        var farenheit: Double
-        farenheit = (centigrades*9/5)+32
-        showResultMessage(String(farenheit.rounded(toPlaces: 2))+" °F")
+    private func convertCentigradesToFarenheit(_ centigrades: Double) -> String {
+        return String(((centigrades*9/5)+32).rounded(toPlaces: 2))
     }
 }
 

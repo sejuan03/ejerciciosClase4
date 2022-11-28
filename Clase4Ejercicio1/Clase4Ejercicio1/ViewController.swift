@@ -20,8 +20,9 @@ class ViewController: UIViewController {
     @IBOutlet weak var emailTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
     @IBOutlet weak var checkPasswordTextField: UITextField!
-    
     @IBOutlet weak var resultLabel: UILabel!
+    
+    private var message = ""
     
     @IBAction func createButtonPressed(_ sender: Any) {
         processCredentials()
@@ -31,32 +32,25 @@ class ViewController: UIViewController {
         let email = emailTextField.text ?? ""
         let password = passwordTextField.text ?? ""
         let checkPassword = checkPasswordTextField.text ?? ""
-        checkEmptyFields(email, password, checkPassword)
+        validateCredentials(email,password,checkPassword)
+        showResultMessage()
     }
     
-    private func checkEmptyFields(_ email: String, _ password: String, _ checkPassword: String) {
-        if email.isEmpty || password.isEmpty || checkPassword.isEmpty {
-            showResultMessage(Constant.emptyFieldsMessage)
-        } else {
-            validateCredentials(email,password,checkPassword)
-        }
-    }
-    
-    private func showResultMessage(_ message: String) {
-        resultLabel.text = message
-        resultLabel.isHidden = false
-    }
-       
     private func validateCredentials(_ email: String,_ password: String, _ checkPassword: String) {
-        var message: String
-        if email == Constant.existingEmail {
+        if email.isEmpty || password.isEmpty || checkPassword.isEmpty {
+            message = Constant.emptyFieldsMessage
+        } else if email == Constant.existingEmail {
             message = Constant.errorMessage
         } else if password != checkPassword {
             message = Constant.passwordsDontMatch
         } else {
             message = Constant.successMessage
         }
-        showResultMessage(message)
+    }
+    
+    private func showResultMessage() {
+        resultLabel.text = message
+        resultLabel.isHidden = false
     }
 }
 

@@ -12,6 +12,7 @@ class ViewController: UIViewController {
     private struct Constant {
         static let emptyField = "Campo Vacio"
         static let writeNumberMessage = "Escribir un numero correcto"
+        static let bigError = "Error"
     }
     
     @IBOutlet weak var centigradesTextField: UITextField!
@@ -19,65 +20,84 @@ class ViewController: UIViewController {
     @IBOutlet weak var resultFarenheitLabel: UILabel!
     @IBOutlet weak var resultCentigradesLabel: UILabel!
     
+    var validTemperature = false
     var convertCelsius = false
+    var grades = ""
+    var message = ""
+    var resultLabel: UILabel?
+    var temperatureIsNumeric = false
     
     @IBAction func convertButtonToFarenheitPressed(_ sender: Any) {
         convertCelsius = true
-        checkEmptyField(centigradesTextField.text)
+        grades = centigradesTextField.text ?? ""
+        validateTemperatureField()
+        proccessTemperatureField()
+        resultLabel = resultFarenheitLabel
+        showResultMessage()
     }
     
     @IBAction func convertButtonToCentigradesPressed(_ sender: Any) {
         convertCelsius = false
-        checkEmptyField(farenheitTextField.text)
+        grades = farenheitTextField.text ?? ""
+        validateTemperatureField()
+        proccessTemperatureField()
+        resultLabel = resultCentigradesLabel
+        showResultMessage()
     }
     
-    private func checkEmptyField(_ gradesField: String?) {
-        let grades = gradesField ?? ""
-        if grades.isEmpty {
-            showResultMessage(Constant.emptyField)
+    private func validateTemperatureField()  {
+        temperatureIsNumeric = Double(grades) != nil
+        validTemperature = !grades.isEmpty
+    }
+    
+    private func proccessTemperatureField() {
+        if validTemperature && temperatureIsNumeric {
+            let resultTemperature = processGrades()
+            setMessage(resultTemperature)
+        } else if validTemperature {
+            setMessage(Constant.writeNumberMessage)
         } else {
-            processGrades(grades)
+            setMessage(Constant.emptyField)
         }
     }
     
-    private func showResultMessage(_ message: String) {
+    private func processGrades() -> String {
+        assert(validTemperature)
+        guard let gradesNumeric = Double(grades) else {
+            validTemperature = false
+            return Constant.bigError
+        }
         if convertCelsius {
-            resultFarenheitLabel.text = message
-            resultFarenheitLabel.isHidden = false
-            //resultCentigradesLabel.isHidden = true
+            let celsius = convertCentigradesToFarenheit(gradesNumeric)
+            return parseTemperature(celsius) + " °F"
         } else {
-            resultCentigradesLabel.text = message
-            resultCentigradesLabel.isHidden = false
-            //resultFarenheitLabel.isHidden = true
+            let farenheit = convertFarenheitToCentigrades(gradesNumeric)
+            return parseTemperature(farenheit) + " °C"
         }
     }
     
-    private func processGrades(_ grades: String) {
-        if let doubleGrades = Double(grades) {
-            defineWhichTemperatureOperation(doubleGrades)
-        } else {
-            showResultMessage(Constant.writeNumberMessage)
+    private func setMessage(_ resultMessage: String) {
+        message = resultMessage
+    }
+    
+    private func convertCentigradesToFarenheit(_ centigrades: Double) -> Double {
+        return (centigrades*9/5)+32
+    }
+    
+    private func convertFarenheitToCentigrades(_ farenheit: Double) -> Double {
+        return (farenheit-32)*5/9
+    }
+    
+    private func parseTemperature(_ temperature: Double) -> String {
+        return String(temperature.rounded(toPlaces: 2))
+    }
+    
+    private func showResultMessage() {
+        guard let resultLabel = resultLabel else {
+            return
         }
-    }
-    
-    private func defineWhichTemperatureOperation(_ grades: Double) {
-        if convertCelsius {
-            convertCentigradesToFarenheit(grades)
-        } else {
-            convertFarenheitToCentigrades(grades)
-        }
-    }
-    
-    private func convertCentigradesToFarenheit(_ centigrades: Double) {
-        var farenheit: Double
-        farenheit = (centigrades*9/5)+32
-        showResultMessage(String(farenheit.rounded(toPlaces: 2))+" °F")
-    }
-    
-    private func convertFarenheitToCentigrades(_ farenheit: Double) {
-        var celsius: Double
-        celsius = (farenheit-32)*5/9
-        showResultMessage(String(celsius.rounded(toPlaces: 2))+" °C")
+            resultLabel.text = message
+            resultLabel.isHidden = false
     }
 }
 

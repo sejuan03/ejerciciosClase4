@@ -22,7 +22,7 @@ class ViewController: UIViewController {
     
     private func checkAnimalImageExists() {
         let animal = animalTextField.text ?? ""
-        var animalImage = UIImage(named: animal)
+        let animalImage = UIImage(named: animal)
         if let animalImage {
             showAnimalImage(animalImage)
         } else {
